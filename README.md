@@ -19,11 +19,11 @@ To get the default config files for Kafka and Zookeeper out to the local machine
     In a terminal, run
     docker cp kafka:/kafka/config/server.properties ./config/kafka-1/server.properties
     docker cp kafka:/kafka/config/zookeeper.properties ./config/zookeeper-1/zookeeper.properties
-We want to run new producers and zookeeper in their separate containers
+We want to run new brokers and zookeeper in their separate containers
 
     Go to kafka-1 config file, find zookeeper.connect=localhost:2181
     Change to zookeeper.connect=zookeeper-1:2181
-To build more producers, copy and paste config file for kafka-1 and paste it into kafka-k folders, and change the broker.id to a unique id.
+To build more brokers, copy and paste config file for kafka-1 and paste it into kafka-k folders, and change the broker.id to a unique id.
 
 ## Zookeeper
 Centralized service to maintain information (config, naming, status of nodes, topics, etc.)
