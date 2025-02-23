@@ -30,3 +30,6 @@
 *.exe
 *.out
 *.app
+
+server.properties
+zookeeper.properties
