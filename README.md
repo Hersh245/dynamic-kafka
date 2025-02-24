@@ -1,5 +1,5 @@
 # Dynamic Kafka
-A containerized Kafka setup with multiple producers.
+An attempt to build dynamic batching in Kafka.
 
 ## **1. Build and Start Kafka Services**
 
@@ -128,4 +128,4 @@ docker exec -it kafka-broker /kafka/bin/kafka-console-producer.sh \
 
 - Modify producer implementations as needed.
 - Add a Kafka consumer for message processing.
-- Tune Kafka settings for optimal performance.
+- Automatically tune Kafka settings for optimal performance.
