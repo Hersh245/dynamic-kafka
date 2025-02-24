@@ -1,96 +1,131 @@
 # Dynamic Kafka
-Attempt to build dynamic batching into Kafka
+A containerized Kafka setup with multiple producers.
 
-## Start building
-Start with building the docker file
+## **1. Build and Start Kafka Services**
 
-    docker build . -t dynamickafka/kafka:3.9.0
-Run Kafka container
+Run the following command to build and start all services:
 
-    docker run --rm --name kafka -it dynamickafka/kafka:3.9.0 bash
-Some example scripts
+```bash
+docker compose build
+docker compose up -d
+```
 
-    ls -l /kafka/bin/
-Base config file for Kafka
+This starts:
 
-    cat /kafka/config/server.properties
-To get the default config files for Kafka and Zookeeper out to the local machine
+- **Zookeeper** (port `2181`)
+- **Kafka broker** (port `9092`, internally accessible as `kafka:9092`)
+- **Producers** (Python-based, running in separate containers)
 
-    In a terminal, run
-    docker cp kafka:/kafka/config/server.properties ./config/kafka-1/server.properties
-    docker cp kafka:/kafka/config/zookeeper.properties ./config/zookeeper-1/zookeeper.properties
-We want to run new brokers and zookeeper in their separate containers
+---
 
-    Go to kafka-1 config file, find zookeeper.connect=localhost:2181
-    Change to zookeeper.connect=zookeeper-1:2181
-To build more brokers, copy and paste config file for kafka-1 and paste it into kafka-k folders, and change the broker.id to a unique id.
+## **2. Check Running Services**
 
-## Zookeeper
-Centralized service to maintain information (config, naming, status of nodes, topics, etc.)
-Build zookeeper
+List active services:
 
-    cd zookeeper
-    docker build . -t dynamickafka/zookeeper:3.9.0
+```bash
+docker compose ps
+```
 
-## Create Kafka network
+View logs for a specific service:
 
-    docker network create kafka
-    docker run -d `
-    --rm `
-    --name zookeeper-1 `
-    --net kafka `
-    -v ${PWD}/config/zookeeper-1/zookeeper.properties:/kafka/config/zookeeper.properties `
-    dynamickafka/zookeeper:3.9.0
+```bash
+docker compose logs -f kafka
+docker compose logs -f producer1
+docker compose logs -f producer2
+```
 
-Run Kafka 1
+---
 
-    docker run -d `
-    --rm `
-    --name kafka-1 `
-    --net kafka `
-    -v ${PWD}/config/kafka-1/server.properties:/kafka/config/server.properties `
-    dynamickafka/kafka:3.9.0
+## **3. Producing and Consuming Messages**
 
-Run Kafka 2
+To manually run a producer:
 
-    docker run -d `
-    --rm `
-    --name kafka-2 `
-    --net kafka `
-    -v ${PWD}/config/kafka-2/server.properties:/kafka/config/server.properties `
-    dynamickafka/kafka:3.9.0
+```bash
+docker exec -it kafka-producer-1 python /app/producer.py
+```
 
-Run Kafka 3
+To consume messages from Kafka:
 
-    docker run -d `
-    --rm `
-    --name kafka-3 `
-    --net kafka `
-    -v ${PWD}/config/kafka-3/server.properties:/kafka/config/server.properties `
-    dynamickafka/kafka:3.9.0
+```bash
+docker exec -it kafka-broker /kafka/bin/kafka-console-consumer.sh \
+    --bootstrap-server kafka:9092 \
+    --topic mytopic \
+    --from-beginning
+```
 
-Check status
+---
 
-    docker ps -- will list all running images
-    docker logs {name} -- will list the status of the called image
+## **4. Kafka Topic Management**
 
-## Create topic
+### **Create a Topic**
 
-Use the provided sample script
-Access the container
-
-    docker exec -it zookeeper-1 bash
-Create topic
-
-    /kafka/bin/kafka-topics.sh \
+```bash
+docker exec -it kafka-broker /kafka/bin/kafka-topics.sh \
     --create \
-    --zookeeper zookeeper-1:2181 \
+    --bootstrap-server kafka:9092 \
     --replication-factor 1 \
     --partitions 3 \
-    --topic {topic_name}
-To check the details of the topic
+    --topic mytopic
+```
 
-    /kafka/bin/kafka-topics.sh \
+### **Describe a Topic**
+
+```bash
+docker exec -it kafka-broker /kafka/bin/kafka-topics.sh \
     --describe \
-    --topic {topic_name} \
-    --zookeeper zookeeper-1:2181
+    --bootstrap-server kafka:9092 \
+    --topic mytopic
+```
+
+---
+
+## **5. Stopping and Cleaning Up**
+
+To stop all running containers:
+
+```bash
+docker compose down
+```
+
+To remove all containers and volumes:
+
+```bash
+docker compose down -v
+```
+
+---
+
+## **6. Troubleshooting**
+
+Check running containers:
+
+```bash
+docker ps
+```
+
+Restart a specific service:
+
+```bash
+docker compose restart producer1
+```
+
+View Kafka logs:
+
+```bash
+docker compose logs -f kafka
+```
+
+Manually produce messages:
+
+```bash
+docker exec -it kafka-broker /kafka/bin/kafka-console-producer.sh \
+    --broker-list kafka:9092 --topic mytopic
+```
+
+---
+
+### **Next Steps**
+
+- Modify producer implementations as needed.
+- Add a Kafka consumer for message processing.
+- Tune Kafka settings for optimal performance.

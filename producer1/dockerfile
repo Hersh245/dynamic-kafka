@@ -1,0 +1,11 @@
+FROM python:3.12-slim
+
+# Install the Confluent Python client
+COPY requirements.txt /tmp/requirements.txt
+RUN pip install --no-cache-dir -r /tmp/requirements.txt
+
+# Copy in the producer code
+COPY producer.py /app/producer.py
+
+# Run the Python script
+CMD ["python", "/app/producer.py"]

@@ -1,0 +1,36 @@
+services:
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    container_name: zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+    ports:
+      - "2181:2181"
+
+  kafka:
+    build:
+      context: ./broker
+    container_name: kafka-broker
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      # Rely on Docker's internal network; to connect from other containers, use "kafka:9092"
+    depends_on:
+      - zookeeper
+
+  producer1:
+    build:
+      context: ./producer1
+    container_name: kafka-producer-1
+    depends_on:
+      - kafka
+
+  producer2:
+    build:
+      context: ./producer2
+    container_name: kafka-producer-2
+    depends_on:
+      - kafka
