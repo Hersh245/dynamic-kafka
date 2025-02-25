@@ -21,16 +21,30 @@ services:
     depends_on:
       - zookeeper
 
+  adminclient:
+    build:
+      context: ./adminclient
+    container_name: admin-client
+    depends_on:
+      - kafka
+
   producer1:
     build:
       context: ./producer1
     container_name: kafka-producer-1
     depends_on:
-      - kafka
+      - adminclient
 
   producer2:
     build:
       context: ./producer2
     container_name: kafka-producer-2
     depends_on:
-      - kafka
+      - adminclient
+
+  consumer1:
+    build:
+      context: ./consumer1
+    container_name: kafka-consumer-1
+    depends_on:
+      - adminclient

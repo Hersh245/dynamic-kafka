@@ -24,6 +24,7 @@ def delivery_report(err, msg):
 
 
 # Send a few messages
+time.sleep(5)
 topic_name = "mytopic"
 for i in range(5):
     value = f"Hello from Producer1 - {i}"

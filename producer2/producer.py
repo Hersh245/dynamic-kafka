@@ -21,7 +21,8 @@ def delivery_report(err, msg):
         )
 
 
-topic_name = "mytopic"
+time.sleep(5)
+topic_name = "mytopic2"
 for i in range(5):
     value = f"Hello from Producer2 - {i}"
     producer.produce(topic_name, key=str(i), value=value, callback=delivery_report)
