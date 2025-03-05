@@ -11,7 +11,6 @@ producer_conf = {
 
 producer = Producer(producer_conf)
 
-
 def delivery_report(err, msg):
     """Called once for each message to indicate delivery result."""
     if err is not None:
@@ -19,9 +18,8 @@ def delivery_report(err, msg):
     else:
         print(
             f"Producer1 successfully produced record to "
-            f"{msg.topic()} partition [{msg.partition()}] @ offset {msg.offset()}"
+            f"{msg.topic()} partition [{msg.partition()}] @ offset {msg.offset()} with latency {msg.latency()}"
         )
-
 
 # Send a few messages
 topic_name = "mytopic"
