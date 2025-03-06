@@ -14,6 +14,7 @@ class DynamicBatchProducer:
             }
         self.producer_conf["batch.size"] = self.batch_size
         self.producer = Producer(self.producer_conf)
+        self.report = False
         
     def send_data(self, data, topic_name):
         historical_cnt = 0
@@ -22,13 +23,15 @@ class DynamicBatchProducer:
             self.producer.produce(topic_name, key=str(i), value=data[i], callback=self.delivery_report)
             if historical_cnt >= self.batch_size:
                 historical_cnt = 0
-                self.producer.poll(0)
-                print("polling")
+                self.producer.poll(1)
+                while(not self.report):
+                    time.sleep(0.5)
+                self.report = False
                 if self.current_latency > self.target_latency:
                     self.producer.flush()
                     self.producer_conf["batch.size"] = max(1,self.producer_conf["batch.size"] - 100)
                     self.batch_size = self.producer_conf["batch.size"]
-                    self.producer = (self.producer_conf)
+                    self.producer = Producer(self.producer_conf)
                     print("Batch size was changed")
                 else:
                     print(self.current_latency)
@@ -39,6 +42,7 @@ class DynamicBatchProducer:
             print(f"Delivery failed for record {msg.key()}: {err}")
         else:
             self.current_latency = msg.latency()
+            self.report = True
             print(
                 f"Producer2 successfully produced record to "
                 f"{msg.topic()} partition [{msg.partition()}] @ offset {msg.offset()} with latency {msg.latency()}"
@@ -51,9 +55,6 @@ class DynamicBatchProducer:
 
 
 # producer = Producer(producer_conf)
-
-
-
 topic_name = "mytopic"
 data = []
 for i in range(20):

@@ -20,6 +20,7 @@ services:
       # Rely on Docker's internal network; to connect from other containers, use "kafka:9092"
     depends_on:
       - zookeeper
+    command: ["/bin/sh", "-c", "/kafka/bin/kafka-server-start.sh /kafka/config/server.properties"]
 
   producer1:
     build:
