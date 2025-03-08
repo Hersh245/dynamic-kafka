@@ -11,6 +11,7 @@ producer_conf = {
 
 producer = Producer(producer_conf)
 
+
 def delivery_report(err, msg):
     """Called once for each message to indicate delivery result."""
     if err is not None:
@@ -21,12 +22,12 @@ def delivery_report(err, msg):
             f"{msg.topic()} partition [{msg.partition()}] @ offset {msg.offset()} with latency {msg.latency()}"
         )
 
+
 # Send a few messages
 topic_name = "mytopic"
 for i in range(5):
     value = f"Hello from Producer1 - {i}"
     producer.produce(topic_name, key=str(i), value=value, callback=delivery_report)
-    # "Flush" is asynchronous, but let's add a small sleep for demonstration
     time.sleep(0.5)
 
 # Wait for deliveries to complete

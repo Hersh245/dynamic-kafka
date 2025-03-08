@@ -22,12 +22,12 @@ services:
       - zookeeper
     command: ["/bin/sh", "-c", "/kafka/bin/kafka-server-start.sh /kafka/config/server.properties"]
 
-  producer1:
-    build:
-      context: ./producer1
-    container_name: kafka-producer-1
-    depends_on:
-      - kafka
+  # producer1:
+  #   build:
+  #     context: ./producer1
+  #   container_name: kafka-producer-1
+  #   depends_on:
+  #     - kafka
 
   producer2:
     build:
