@@ -23,7 +23,7 @@ plt.title("Latency Over Time")
 plt.grid(True)
 plt.show()
 
-sampled_indices = np.arange(0, len(latencies), 100)
+sampled_indices = np.arange(1, len(latencies), 100)
 sampled_latencies = latencies[sampled_indices]
 
 plt.figure(figsize=(10, 5))

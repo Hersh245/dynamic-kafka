@@ -3,7 +3,7 @@ import string
 import time
 from producer import DynamicBatchProducer
 
-NUM_MSG = 10000
+NUM_MSG = 100000
 MSG_SIZE = 1000
 
 
@@ -21,7 +21,7 @@ def generate_payload(msg_size, num_msg):
 
 if __name__ == "__main__":
     payload = generate_payload(MSG_SIZE, NUM_MSG)
-    producer = DynamicBatchProducer(0.2)
+    producer = DynamicBatchProducer(0.005)
     start_time = time.time()
     producer.send_data(payload, "mytopic")
     end_time = time.time()
