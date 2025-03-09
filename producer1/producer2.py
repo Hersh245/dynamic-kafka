@@ -1,7 +1,7 @@
 import time
 import json
 from confluent_kafka import Producer
-
+from confluent_kafka.admin import AdminClient, KafkaException
 
 class DynamicBatchProducer:
     def __init__(self, latency):
@@ -12,6 +12,7 @@ class DynamicBatchProducer:
         self.effective_window = 50  # effective window size for the EMA
         self.alpha = 2 / (self.effective_window + 1)  # smoothing factor for EMA
         self.ema_latency = None  # will hold the exponential moving average of latencies
+        self.latencies = []
 
         self.producer_conf = {
             "bootstrap.servers": "kafka:9092",
@@ -22,6 +23,7 @@ class DynamicBatchProducer:
         self.producer = Producer(self.producer_conf, stats_cb=self.stats_callback)
 
     def send_data(self, data, topic_name):
+        self.check_broker_ready("kafka:9092")
         for i in range(len(data)):
             self.producer.produce(
                 topic_name, key=str(i), value=data[i], callback=self.delivery_report
@@ -52,6 +54,8 @@ class DynamicBatchProducer:
         else:
             latency = msg.latency()  # assume this returns latency in seconds
             self.delivery_latency = latency
+            
+            self.latencies.append(latency)
             # Update EMA without storing all values.
             if self.ema_latency is None:
                 self.ema_latency = latency
@@ -73,3 +77,19 @@ class DynamicBatchProducer:
                         print(
                             f"Broker {broker_id}: topic {topic_name} has a batch sized average of {topic_data['batchsize']['avg']}"
                         )
+    
+    def print_latencies(self):
+        with open('dynamic_per_msg_latency.txt', "a") as file:
+            for l in self.latencies:
+                file.write(f"{l}\n")
+                
+    def check_broker_ready(self, bootstrap_servers):
+        admin_client = AdminClient({'bootstrap.servers': bootstrap_servers})
+        while True:
+            try:
+                broker_metadata = admin_client.list_topics(timeout=10)
+                print("Broker is ready and available.")
+                return broker_metadata 
+            except KafkaException as e:
+                print(f"Waiting for broker to become available: {str(e)}")
+                time.sleep(1)

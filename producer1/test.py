@@ -26,3 +26,4 @@ if __name__ == "__main__":
     producer.send_data(payload, "mytopic")
     end_time = time.time()
     print(f"end to end latency is {end_time - start_time}")
+    producer.print_latencies()

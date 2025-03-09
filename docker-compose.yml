@@ -11,6 +11,8 @@ services:
     build:
       context: ./broker
     container_name: kafka-broker
+    cap_add:
+      - NET_ADMIN  # Allows modifying network settings
     ports:
       - "9092:9092"
     environment:
@@ -22,16 +24,16 @@ services:
       - zookeeper
     command: ["/bin/sh", "-c", "/kafka/bin/kafka-server-start.sh /kafka/config/server.properties"]
 
-  # producer1:
-  #   build:
-  #     context: ./producer1
-  #   container_name: kafka-producer-1
-  #   depends_on:
-  #     - kafka
-
-  producer2:
+  producer1:
     build:
-      context: ./producer2
-    container_name: kafka-producer-2
+      context: ./producer1
+    container_name: kafka-producer-1
     depends_on:
       - kafka
+
+  # producer2:
+  #   build:
+  #     context: ./producer2
+  #   container_name: kafka-producer-2
+  #   depends_on:
+  #     - kafka
