@@ -6,8 +6,8 @@ RUN pip install --no-cache-dir -r /tmp/requirements.txt
 
 # Copy in the producer code
 COPY producer2.py /app/producer.py
-COPY test_vanilla.py /app/test.py
-# COPY test.py /app/test.py
+COPY test.py /app/test.py
+COPY test_vanilla.py /app/test_vanilla.py
 
 # Run the Python script
-CMD ["python", "/app/test.py"]
+CMD ["python", "/app/test_vanilla.py"]

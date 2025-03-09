@@ -1,4 +1,5 @@
 import random
+import json
 import string
 import time
 from confluent_kafka import Producer
@@ -8,6 +9,7 @@ producer_conf_list = [
     {
         "bootstrap.servers": "kafka:9092",
         "batch.size": batch_size,  # Example batch size
+        "statistics.interval.ms": 1,
         "linger.ms": 10,
         # 'compression.type': 'lz4', etc. (optional)
     }
@@ -15,7 +17,14 @@ producer_conf_list = [
 ]
 
 latencies = []
+rtt = []
 
+def stats_callback(stats_json):
+    stats = json.loads(stats_json)
+    if "brokers" in stats:
+        for broker_id, broker_data in stats["brokers"].items():
+            if "rtt" in broker_data:
+                rtt.append(broker_data["rtt"]["avg"] * 1e-6)
 
 def delivery_report(err, msg):
     if err is not None:
@@ -24,7 +33,7 @@ def delivery_report(err, msg):
         latencies.append(msg.latency())
 
 
-NUM_MSG = 10000
+NUM_MSG = 100000
 MSG_SIZE = 1000
 
 
@@ -44,10 +53,21 @@ if __name__ == "__main__":
     payload = generate_payload(MSG_SIZE, NUM_MSG)
     time.sleep(10)
     for producer_conf in producer_conf_list:
-        producer = Producer(producer_conf)
+        latencies = []
+        rtt = []
+        curr_sent_size = 0
+        producer = Producer(producer_conf, stats_cb=stats_callback)
         start_time = time.time()
-        for i in range(NUM_MSG):
-            producer.produce("mytopic", value=payload[i], callback=delivery_report)
+        producer.produce("mytopic", key=str(0), value=payload[0], callback=delivery_report)
+        producer.flush()
+        batch_size = producer_conf['batch.size']
+        for i in range(1, NUM_MSG):
+            producer.produce("mytopic", key=str(i), value=payload[i], callback=delivery_report)
+            curr_sent_size += len(str(i).encode('utf-8')) + len(payload[i])
+            if curr_sent_size >= batch_size:
+                curr_sent_size = 0
+                producer.poll(0.1)
+            producer.poll(0)
         # Wait for deliveries to complete
         producer.flush()
         end_time = time.time()
@@ -57,7 +77,8 @@ if __name__ == "__main__":
         ) as file:
             for l in latencies:
                 file.write(f"{l}\n")
-
-    while True:
-        pass
-        # Prevent container from getting deleted while we copy files
+        with open(
+            f"vanilla_rtt_batchsize_{producer_conf['batch.size']}.txt", "a"
+        ) as file:
+            for l in rtt:
+                file.write(f"{l}\n")

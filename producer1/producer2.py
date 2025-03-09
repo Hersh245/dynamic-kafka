@@ -14,10 +14,11 @@ class DynamicBatchProducer:
         self.ema_latency = None  # will hold the exponential moving average of latencies
         self.past_latency = None
         self.latencies = []
+        self.rtt = []
 
         self.producer_conf = {
             "bootstrap.servers": "kafka:9092",
-            "statistics.interval.ms": 2000,
+            "statistics.interval.ms": 1,
             "batch.size": self.batch_size,
             "linger.ms": 1000,
         }
@@ -110,12 +111,17 @@ class DynamicBatchProducer:
         stats = json.loads(stats_json)
         if "brokers" in stats:
             for broker_id, broker_data in stats["brokers"].items():
-                formatted_json = json.dumps(broker_data, indent=4)
-                print(formatted_json)
+                if "rtt" in broker_data:
+                    self.rtt.append(broker_data["rtt"]["avg"] * 1e-6)
+                # formatted_json = json.dumps(broker_data, indent=4)
+                # print(formatted_json)
     
     def print_latencies(self):
         with open('dynamic_per_msg_latency.txt', "a") as file:
             for l in self.latencies:
+                file.write(f"{l}\n")
+        with open('dynamic_rtt.txt', "a") as file:
+            for l in self.rtt:
                 file.write(f"{l}\n")
                 
     def check_broker_ready(self, server, topic_name):
