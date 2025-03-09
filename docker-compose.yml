@@ -21,12 +21,12 @@ services:
     depends_on:
       - zookeeper
 
-  producer1:
-    build:
-      context: ./producer1
-    container_name: kafka-producer-1
-    depends_on:
-      - kafka
+  # producer1:
+  #   build:
+  #     context: ./producer1
+  #   container_name: kafka-producer-1
+  #   depends_on:
+  #     - kafka
 
   producer2:
     build:

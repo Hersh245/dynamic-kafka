@@ -1,0 +1,84 @@
+kafka-producer-2  | %3|1741500550.876|FAIL|rdkafka#producer-1| [thrd:kafka:9092/bootstrap]: kafka:9092/bootstrap: Connect to ipv4#172.19.0.3:9092 failed: Connection refused (after 1ms in state CONNECT)
+kafka-producer-2  | %3|1741500551.876|FAIL|rdkafka#producer-1| [thrd:kafka:9092/bootstrap]: kafka:9092/bootstrap: Connect to ipv4#172.19.0.3:9092 failed: Connection refused (after 0ms in state CONNECT, 1 identical error(s) suppressed)
+kafka-producer-2  | Broker is ready and available.
+kafka-producer-2  | stats callback time: 1741500556.4353108
+kafka-producer-2  | avg int_latency: 0
+kafka-producer-2  | min int_latency: 0
+kafka-producer-2  | max int_latency: 0
+kafka-producer-2  | avg outbuf_latency: 39
+kafka-producer-2  | min outbuf_latency: 29
+kafka-producer-2  | max outbuf_latency: 50
+kafka-producer-2  | avg rtt: 18090
+kafka-producer-2  | min rtt: 3813
+kafka-producer-2  | max rtt: 32367
+kafka-producer-2  | stats callback time: 1741500556.4359646
+kafka-producer-2  | avg int_latency: 0
+kafka-producer-2  | min int_latency: 0
+kafka-producer-2  | max int_latency: 0
+kafka-producer-2  | avg outbuf_latency: 125
+kafka-producer-2  | min outbuf_latency: 125
+kafka-producer-2  | max outbuf_latency: 125
+kafka-producer-2  | avg rtt: 0
+kafka-producer-2  | min rtt: 0
+kafka-producer-2  | max rtt: 0
+kafka-producer-2  | stats callback time: 1741500556.436316
+kafka-producer-2  | avg int_latency: 503504
+kafka-producer-2  | min int_latency: 1651
+kafka-producer-2  | max int_latency: 1006578
+kafka-producer-2  | avg outbuf_latency: 24
+kafka-producer-2  | min outbuf_latency: 24
+kafka-producer-2  | max outbuf_latency: 24
+kafka-producer-2  | avg rtt: 18560
+kafka-producer-2  | min rtt: 5852
+kafka-producer-2  | max rtt: 31269
+kafka-producer-2  | stats callback time: 1741500556.436589
+kafka-producer-2  | avg int_latency: 11114
+kafka-producer-2  | min int_latency: 11114
+kafka-producer-2  | max int_latency: 11114
+kafka-producer-2  | avg outbuf_latency: 124
+kafka-producer-2  | min outbuf_latency: 124
+kafka-producer-2  | max outbuf_latency: 124
+kafka-producer-2  | avg rtt: 4093
+kafka-producer-2  | min rtt: 4093
+kafka-producer-2  | max rtt: 4093
+kafka-producer-2  | stats callback time: 1741500556.4368322
+kafka-producer-2  | avg int_latency: 13769
+kafka-producer-2  | min int_latency: 13769
+kafka-producer-2  | max int_latency: 13769
+kafka-producer-2  | avg outbuf_latency: 246
+kafka-producer-2  | min outbuf_latency: 246
+kafka-producer-2  | max outbuf_latency: 246
+kafka-producer-2  | avg rtt: 7689
+kafka-producer-2  | min rtt: 7689
+kafka-producer-2  | max rtt: 7689
+kafka-producer-2  | delivery report
+kafka-producer-2  | Message delivered to test_topic [0] at offset 0
+kafka-producer-2  | manual timestamp diff: 2.514474391937256
+kafka-producer-2  | msg timestamp 0 index: 1
+kafka-producer-2  | create time: 1741500553922
+kafka-producer-2  | msg latency: 2.514203
+kafka-producer-2  | delivery report
+kafka-producer-2  | Message delivered to test_topic [0] at offset 1
+kafka-producer-2  | manual timestamp diff: 2.0101542472839355
+kafka-producer-2  | msg timestamp 0 index: 1
+kafka-producer-2  | create time: 1741500554426
+kafka-producer-2  | msg latency: 2.010132
+kafka-producer-2  | delivery report
+kafka-producer-2  | Message delivered to test_topic [0] at offset 2
+kafka-producer-2  | manual timestamp diff: 1.5096545219421387
+kafka-producer-2  | msg timestamp 0 index: 1
+kafka-producer-2  | create time: 1741500554927
+kafka-producer-2  | msg latency: 1.509532
+kafka-producer-2  | delivery report
+kafka-producer-2  | Message delivered to test_topic [0] at offset 3
+kafka-producer-2  | manual timestamp diff: 1.0071754455566406
+kafka-producer-2  | msg timestamp 0 index: 1
+kafka-producer-2  | create time: 1741500555430
+kafka-producer-2  | msg latency: 1.006799
+kafka-producer-2  | delivery report
+kafka-producer-2  | Message delivered to test_topic [0] at offset 4
+kafka-producer-2  | manual timestamp diff: 0.5045387744903564
+kafka-producer-2  | msg timestamp 0 index: 1
+kafka-producer-2  | create time: 1741500555932
+kafka-producer-2  | msg latency: 0.504425
+kafka-producer-2 exited with code 0
