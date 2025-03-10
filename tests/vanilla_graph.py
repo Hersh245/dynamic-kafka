@@ -15,7 +15,9 @@ def plot_latency_with_moving_average(
     plt.figure(figsize=(10, 6))
 
     for filename in sorted(glob.glob(file_pattern)):
-        match = re.search(r"vanilla_per_msg_latency_batchsize_(1.000)\.txt", filename)
+        match = re.search(
+            r"latency_vanilla_per_msg_latency_batchsize_(10000)\.txt", filename
+        )
         if not match:
             continue
 
@@ -35,8 +37,6 @@ def plot_latency_with_moving_average(
     plt.ylabel("Latency (seconds)")
 
     # Limit the y-axis to 0.1 seconds
-    plt.ylim(top=y_limit)
-    plt.ylim(bottom=0.001)
     plt.legend()
     plt.grid(True)
     plt.tight_layout()
@@ -46,7 +46,7 @@ def plot_latency_with_moving_average(
 if __name__ == "__main__":
     # Example usage:
     plot_latency_with_moving_average(
-        file_pattern="vanilla_per_msg_latency_batchsize_*.txt",
-        window_size=500000,
+        file_pattern="latency_vanilla_per_msg_latency_batchsize_*.txt",
+        window_size=100,
         y_limit=0.003,  # cap the y-axis at 0.1 seconds
     )
