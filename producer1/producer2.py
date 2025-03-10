@@ -5,7 +5,7 @@ from confluent_kafka.admin import AdminClient, KafkaException, NewTopic
 
 class DynamicBatchProducer:
     def __init__(self, latency):
-        self.batch_size = 100000
+        self.batch_size = 1000
         self.target_latency = latency
         self.delivery_latency = None  # latest latency measurement
         self.max_latency = 0
@@ -20,7 +20,7 @@ class DynamicBatchProducer:
             "bootstrap.servers": "kafka:9092",
             "statistics.interval.ms": 1,
             "batch.size": self.batch_size,
-            "linger.ms": 1000,
+            "linger.ms": 1,
         }
         self.producer = Producer(self.producer_conf, stats_cb=self.stats_callback)
 
@@ -40,7 +40,7 @@ class DynamicBatchProducer:
                 curr_sent_size = 0
                 while(self.delivery_latency == None or self.ema_latency == None or self.past_latency != None and self.past_latency == self.ema_latency):
                     self.past_latency = self.ema_latency
-                    self.producer.poll(self.target_latency)
+                    self.producer.poll(self.target_latency * 100)
                     break
             else:
                 self.producer.poll(0)
@@ -50,37 +50,37 @@ class DynamicBatchProducer:
                 or self.delivery_latency > self.target_latency * 2
             ):
                 # Decrease batch size if the average latency is too high.
-                self.producer_conf["batch.size"] = max(
-                    1, self.producer_conf["batch.size"] / 5
-                )
-                self.batch_size = self.producer_conf["batch.size"]
-                self.producer.flush()
-                self.producer = Producer(
-                    self.producer_conf, stats_cb=self.stats_callback
-                )
-                print(f"Batch size was decreased with current latency {self.delivery_latency}, ema latency {self.ema_latency}, with current batch size {self.batch_size}")
-                self.ema_latency = None
-                self.delivery_latency = None
-                self.past_latency = None
-                curr_sent_size = 0
+                self.batch_size =  max(100, int(self.batch_size / 1.2))
+                if(self.batch_size != self.producer_conf["batch.size"]):
+                    self.producer_conf["batch.size"] = max(
+                        1, self.batch_size
+                    )
+                    self.producer.flush()
+                    self.producer = Producer(
+                        self.producer_conf, stats_cb=self.stats_callback
+                    )
+                    print(f"Batch size was decreased with current latency {self.delivery_latency}, ema latency {self.ema_latency}, with current batch size {self.batch_size}")
+                    self.ema_latency = None
+                    self.delivery_latency = None
+                    self.past_latency = None
+                    curr_sent_size = 0
             elif self.ema_latency is not None and self.delivery_latency is not None and (
                 self.ema_latency != 0 and
                 self.ema_latency * 2 < self.target_latency
             ):
                 # Increase batch size if the average latency is too high.
-                self.producer_conf["batch.size"] = max(
-                    1, self.producer_conf["batch.size"] * 10
-                )
-                self.batch_size = self.producer_conf["batch.size"]
-                self.producer.flush()
-                self.producer = Producer(
-                    self.producer_conf, stats_cb=self.stats_callback
-                )
-                print(f"Batch size was increased with current latency {self.delivery_latency}, ema latency {self.ema_latency}, with current batch size {self.batch_size}")
-                self.ema_latency = None
-                self.delivery_latency = None
-                self.past_latency = None
-                curr_sent_size = 0
+                self.batch_size = min(20000, self.batch_size * 2)
+                if(self.batch_size != self.producer_conf["batch.size"]):
+                    self.producer_conf["batch.size"] = self.batch_size
+                    self.producer.flush()
+                    self.producer = Producer(
+                        self.producer_conf, stats_cb=self.stats_callback
+                    )
+                    print(f"Batch size was increased with current latency {self.delivery_latency}, ema latency {self.ema_latency}, with current batch size {self.batch_size}")
+                    self.ema_latency = None
+                    self.delivery_latency = None
+                    self.past_latency = None
+                    curr_sent_size = 0
 
         self.producer.flush()
         print(f"Last latency: {self.delivery_latency}")

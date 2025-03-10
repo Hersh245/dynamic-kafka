@@ -13,7 +13,7 @@ producer_conf_list = [
         "linger.ms": 10,
         # 'compression.type': 'lz4', etc. (optional)
     }
-    for batch_size in [100, 200, 500, 1000, 2000, 5000, 10000, 20000]
+    for batch_size in range(1000, 20000, 1000)
 ]
 
 latencies = []
@@ -34,7 +34,7 @@ def delivery_report(err, msg):
 
 
 NUM_MSG = 100000
-MSG_SIZE = 1000
+MSG_SIZE = 100
 
 
 def generate_payload(msg_size, num_msg):

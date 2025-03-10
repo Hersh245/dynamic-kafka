@@ -7,30 +7,34 @@ CONTAINER_NAME="kafka-producer-1"
 DEST_DIR="/Users/hanxu/OneDrive/Desktop/school/grad school/Freshman/CS 239/MuCache/dynamic-kakfa/tests"
 
 # Files to copy
+# FILES=(
+#   "vanilla_per_msg_latency_batchsize_100.txt"
+#   "vanilla_per_msg_latency_batchsize_200.txt"
+#   "vanilla_per_msg_latency_batchsize_500.txt"
+#   "vanilla_per_msg_latency_batchsize_1000.txt"
+#   "vanilla_per_msg_latency_batchsize_2000.txt"
+#   "vanilla_per_msg_latency_batchsize_5000.txt"
+#   "vanilla_per_msg_latency_batchsize_10000.txt"
+#   "vanilla_per_msg_latency_batchsize_20000.txt"
+#   "vanilla_rtt_batchsize_100.txt"
+#   "vanilla_rtt_batchsize_200.txt"
+#   "vanilla_rtt_batchsize_500.txt"
+#   "vanilla_rtt_batchsize_1000.txt"
+#   "vanilla_rtt_batchsize_2000.txt"
+#   "vanilla_rtt_batchsize_5000.txt"
+#   "vanilla_rtt_batchsize_10000.txt"
+#   "vanilla_rtt_batchsize_20000.txt"
+# )
+
 FILES=(
-  "vanilla_per_msg_latency_batchsize_100.txt"
-  "vanilla_per_msg_latency_batchsize_200.txt"
-  "vanilla_per_msg_latency_batchsize_500.txt"
-  "vanilla_per_msg_latency_batchsize_1000.txt"
-  "vanilla_per_msg_latency_batchsize_2000.txt"
-  "vanilla_per_msg_latency_batchsize_5000.txt"
-  "vanilla_per_msg_latency_batchsize_10000.txt"
-  "vanilla_per_msg_latency_batchsize_20000.txt"
-  "vanilla_rtt_batchsize_100.txt"
-  "vanilla_rtt_batchsize_200.txt"
-  "vanilla_rtt_batchsize_500.txt"
-  "vanilla_rtt_batchsize_1000.txt"
-  "vanilla_rtt_batchsize_2000.txt"
-  "vanilla_rtt_batchsize_5000.txt"
-  "vanilla_rtt_batchsize_10000.txt"
-  "vanilla_rtt_batchsize_20000.txt"
+  "dynamic_per_msg_latency.txt"
+  "dynamic_rtt.txt"
 )
 
 # FILES=(
-#   "dynamic_per_msg_latency.txt"
-#   "dynamic_rtt.txt"
+#   "pid_dynamic_per_msg_latency.txt"
+#   "pid_dynamic_rtt.txt"
 # )
-
 
 # Ensure the destination directory exists
 mkdir -p "$DEST_DIR"

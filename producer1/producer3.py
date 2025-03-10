@@ -5,7 +5,7 @@ from confluent_kafka.admin import AdminClient, KafkaException, NewTopic
 
 
 class DynamicBatchProducer:
-    def __init__(self, latency, kp, ki, kd):
+    def __init__(self, latency):
         self.batch_size = 100000
         self.target_latency = latency
         self.delivery_latency = None  # latest latency measurement
@@ -18,9 +18,9 @@ class DynamicBatchProducer:
         self.rtt = []
 
         # PID variables
-        self.kp = kp
-        self.ki = ki
-        self.kd = kd
+        self.kp = 0.9
+        self.ki = 0.3
+        self.kd = 0.6
         self.integral_error = 0.0
         self.last_error = 0.0
 
@@ -168,7 +168,7 @@ class DynamicBatchProducer:
         with open("pid_dynamic_per_msg_latency.txt", "a") as file:
             for l in self.latencies:
                 file.write(f"{l}\n")
-        with open("dynamic_rtt.txt", "a") as file:
+        with open("pid_dynamic_rtt.txt", "a") as file:
             for l in self.rtt:
                 file.write(f"{l}\n")
 

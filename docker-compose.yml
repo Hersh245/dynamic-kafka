@@ -28,6 +28,9 @@ services:
     build:
       context: ./producer1
     container_name: kafka-producer-1
+    cap_add:
+      - NET_ADMIN  # Allows modifying network settings
+    privileged: true
     depends_on:
       - kafka
 
