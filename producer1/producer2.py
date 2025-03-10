@@ -2,6 +2,7 @@ import time
 import json
 from confluent_kafka import Producer
 from confluent_kafka.admin import AdminClient, KafkaException, NewTopic
+from collections import OrderedDict
 
 class DynamicBatchProducer:
     def __init__(self, latency):
@@ -13,7 +14,8 @@ class DynamicBatchProducer:
         self.alpha = 2 / (self.effective_window + 1)  # smoothing factor for EMA
         self.ema_latency = None  # will hold the exponential moving average of latencies
         self.past_latency = None
-        self.latencies = []
+        self.latencies = OrderedDict()
+        self.historic_batch_size = OrderedDict()
         self.rtt = []
 
         self.producer_conf = {
@@ -29,6 +31,7 @@ class DynamicBatchProducer:
         curr_sent_size = 0
         self.producer.produce(topic_name, key=str(0), value=data[0], callback=self.delivery_report)
         self.producer.flush()
+        self.historic_batch_size[time.time()] = self.batch_size
         for i in range(1, len(data)):
             self.producer.produce(
                 topic_name, key=str(i), value=data[i], callback=self.delivery_report
@@ -40,7 +43,7 @@ class DynamicBatchProducer:
                 curr_sent_size = 0
                 while(self.delivery_latency == None or self.ema_latency == None or self.past_latency != None and self.past_latency == self.ema_latency):
                     self.past_latency = self.ema_latency
-                    self.producer.poll(self.target_latency * 100)
+                    self.producer.poll(self.target_latency)
                     break
             else:
                 self.producer.poll(0)
@@ -64,6 +67,7 @@ class DynamicBatchProducer:
                     self.delivery_latency = None
                     self.past_latency = None
                     curr_sent_size = 0
+                    self.historic_batch_size[time.time()] = self.batch_size
             elif self.ema_latency is not None and self.delivery_latency is not None and (
                 self.ema_latency != 0 and
                 self.ema_latency * 2 < self.target_latency
@@ -81,6 +85,7 @@ class DynamicBatchProducer:
                     self.delivery_latency = None
                     self.past_latency = None
                     curr_sent_size = 0
+                    self.historic_batch_size[time.time()] = self.batch_size
 
         self.producer.flush()
         print(f"Last latency: {self.delivery_latency}")
@@ -96,7 +101,7 @@ class DynamicBatchProducer:
             else:
                 self.delivery_latency = latency
             
-            self.latencies.append(latency)
+            self.latencies[time.time()] = latency 
             # Update EMA without storing all values.
             if self.ema_latency is None:
                 self.ema_latency = 0
@@ -116,13 +121,17 @@ class DynamicBatchProducer:
                 # formatted_json = json.dumps(broker_data, indent=4)
                 # print(formatted_json)
     
-    def print_latencies(self):
-        with open('dynamic_per_msg_latency.txt', "a") as file:
-            for l in self.latencies:
-                file.write(f"{l}\n")
-        with open('dynamic_rtt.txt', "a") as file:
+    def print_latencies(self, file_name):
+        with open('dynamic_per_msg_latency' + file_name + ".txt", "a") as file:
+            for t, l in self.latencies.items():
+                file.write(f"{t},{l}\n")
+        with open('dynamic_batch_size' + file_name + ".txt", "a") as file:
+            for t, b in self.historic_batch_size.items():
+                file.write(f"{t},{b}\n")
+        with open('dynamic_rtt' + file_name + ".txt", "a") as file:
             for l in self.rtt:
                 file.write(f"{l}\n")
+            
                 
     def check_broker_ready(self, server, topic_name):
         admin_client = AdminClient({'bootstrap.servers': server})

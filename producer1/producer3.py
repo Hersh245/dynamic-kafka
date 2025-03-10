@@ -18,9 +18,9 @@ class DynamicBatchProducer:
         self.rtt = []
 
         # PID variables
-        self.kp = 0.9
-        self.ki = 0.3
-        self.kd = 0.6
+        self.kp = 1000000
+        self.ki = 0
+        self.kd = 0
         self.integral_error = 0.0
         self.last_error = 0.0
 
@@ -88,6 +88,7 @@ class DynamicBatchProducer:
                 new_batch_size = self.batch_size - adjustment
                 # Enforce a minimum batch size of 1, then cast to int.
                 self.producer_conf["batch.size"] = max(1, int(new_batch_size))
+                self.producer_conf["batch.size"] = min(90000, int(new_batch_size))
                 self.batch_size = self.producer_conf["batch.size"]
 
                 self.producer.flush()
@@ -116,6 +117,7 @@ class DynamicBatchProducer:
                 new_batch_size = self.batch_size - adjustment  # same formula
                 # For negative error, 'adjustment' will be negative => new_batch_size bigger
                 self.producer_conf["batch.size"] = max(1, int(new_batch_size))
+                self.producer_conf["batch.size"] = min(90000, int(new_batch_size))
                 self.batch_size = self.producer_conf["batch.size"]
 
                 self.producer.flush()

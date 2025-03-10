@@ -4,7 +4,7 @@ import time
 import subprocess
 from producer import DynamicBatchProducer
 
-NUM_MSG = 1000000
+NUM_MSG = 100000
 MSG_SIZE = 100
 INTERFACE = "eth0"  # Change if needed
 LATENCY_MS = 10  # Latency in milliseconds
@@ -21,41 +21,27 @@ def generate_payload(msg_size, num_msg):
         payload.append((msg + random_part).encode("utf-8"))
     return payload
 
-def add_latency(interface="eth0", delay_ms=10):
-    """Injects network latency using `tc`."""
-    print(f"Adding {delay_ms}ms latency on {interface}...")
-    subprocess.run(f"tc qdisc add dev {interface} root netem delay {delay_ms}ms", shell=True, check=True)
-
-def remove_latency(interface="eth0"):
-    """Removes the network latency rule."""
-    print(f"Removing latency on {interface}...")
-    subprocess.run(f"tc qdisc del dev {interface} root netem", shell=True, check=True)
-
 if __name__ == "__main__":
-    payload = generate_payload(MSG_SIZE, NUM_MSG)
-    producer = DynamicBatchProducer(0.005)
+    
+    latency_targets = [round(0.0001 + i * 0.0004, 4) for i in range(int((0.005 - 0.0001) / 0.0004) + 1)]
+    end_to_end = []
+    file_names = []
 
-    start_time = time.time()
+    
+    for target in latency_targets:
+        payload = generate_payload(MSG_SIZE, NUM_MSG)
+        producer = DynamicBatchProducer(target)
+        start_time = time.time()
+        producer.send_data(payload, "mytopic")
+        end_time = time.time()
+        end_to_end.append(end_time - start_time)
+        producer.print_latencies(str(target))
+        file_names.append('dynamic_per_msg_latency' + str(target) + ".txt")
+        file_names.append('dynamic_batch_size' + str(target) + ".txt")
+        
 
-    # Divide messages into thirds
-    first_third = NUM_MSG // 3
-    second_third = 2 * (NUM_MSG // 3)
 
-    # Send first third normally
-    producer.send_data(payload[:first_third], "mytopic")
-
-    # Add 10ms latency
-    add_latency(INTERFACE)
-
-    # Send second third with latency
-    producer.send_data(payload[first_third:second_third], "mytopic")
-
-    # Remove latency
-    remove_latency(INTERFACE)
-
-    # Send final third normally
-    producer.send_data(payload[second_third:], "mytopic")
-
-    end_time = time.time()
-    print(f"End-to-end latency: {end_time - start_time}")
-    producer.print_latencies()
+    for l in end_to_end:
+        print(f"End-to-end latency: {l}")
+    for f in file_names:
+        print(f"{f}")

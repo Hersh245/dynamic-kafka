@@ -13,4 +13,4 @@ COPY test.py /app/test.py
 COPY test_vanilla.py /app/test_vanilla.py
 
 # Run the Python script
-CMD ["python", "/app/test_vanilla.py"]
+CMD ["python", "/app/test.py"]
