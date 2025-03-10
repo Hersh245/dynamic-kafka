@@ -27,6 +27,7 @@ FILES=(
   "vanilla_per_msg_latency_batchsize_17000.txt"
   "vanilla_per_msg_latency_batchsize_18000.txt"
   "vanilla_per_msg_latency_batchsize_19000.txt"
+  "vanilla_per_msg_latency_batchsize_20000.txt"
   "vanilla_rtt_batchsize_1000.txt"
   "vanilla_rtt_batchsize_2000.txt"
   "vanilla_rtt_batchsize_3000.txt"
@@ -46,6 +47,7 @@ FILES=(
   "vanilla_rtt_batchsize_17000.txt"
   "vanilla_rtt_batchsize_18000.txt"
   "vanilla_rtt_batchsize_19000.txt"
+  "vanilla_rtt_batchsize_20000.txt"
 )
 
 # FILES=(

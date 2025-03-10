@@ -10,10 +10,10 @@ producer_conf_list = [
         "bootstrap.servers": "kafka:9092",
         "batch.size": batch_size,  # Example batch size
         "statistics.interval.ms": 1,
-        "linger.ms": 10,
+        "linger.ms": 1,
         # 'compression.type': 'lz4', etc. (optional)
     }
-    for batch_size in range(1000, 20000, 1000)
+    for batch_size in range(1000, 21000, 1000)
 ]
 
 latencies = []
